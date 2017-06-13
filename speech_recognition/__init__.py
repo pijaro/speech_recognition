@@ -805,15 +805,15 @@ class Recognizer(AudioSource):
                     f.flush()
                     api_credentials = GoogleCredentials.from_stream(f.name)
 
-            speech_service = build("speech", "v1beta1", credentials=api_credentials, cache_discovery=False)
+            speech_service = build("speech", "v1", credentials=api_credentials, cache_discovery=False)
         except ImportError:
             raise RequestError("missing google-api-python-client module: ensure that google-api-python-client is set up correctly.")
 
         if preferred_phrases is None:
-            speech_config = {"encoding": "FLAC", "sampleRate": audio_data.sample_rate, "languageCode": language}
+            speech_config = {"encoding": "FLAC", "sampleRateHertz": audio_data.sample_rate, "languageCode": language}
         else:
-            speech_config = {"encoding": "FLAC", "sampleRate": audio_data.sample_rate, "languageCode": language, "speechContext": {"phrases": preferred_phrases}}
-        request = speech_service.speech().syncrecognize(body={"audio": {"content": base64.b64encode(flac_data).decode("utf8")}, "config": speech_config})
+            speech_config = {"encoding": "FLAC", "sampleRateHertz": audio_data.sample_rate, "languageCode": language, "speechContext": {"phrases": preferred_phrases}}
+        request = speech_service.speech().recognize(body={"audio": {"content": base64.b64encode(flac_data).decode("utf8")}, "config": speech_config})
 
         try:
             response = request.execute()
